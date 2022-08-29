@@ -11,10 +11,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-config("libOpenCL_public_config") {
-    include_dirs = [ "./" ]
+import("//build/ohos.gni")
+
+config("cl_config") {
+  cflags = [
+    "-std=c++17",
+    "-Wno-error=implicit-fallthrough",
+    "-Wno-deprecated-declarations",
+  ]
 }
 
-group("libOpenCL") {
-    public_configs = [ ":libOpenCL_public_config" ]
+config("cl_public_config") {
+  include_dirs = [
+    "./",
+    "include",
+    #"//base/hiviewdfx/hilog/interfaces/native/innerkits/include",
+  ]
+}
+
+ohos_shared_library("libcl") {
+  visibility = [ "*" ]
+  sources = [
+    "src/opencl_wrapper.cpp",
+  ]
+  configs = [ ":cl_config" ]
+  public_configs = [ ":cl_public_config" ]
+  output_name = "OpenCL"
+  output_extension = "so"
+  part_name = "opencl"
+  subsystem_name = "thirdparty"
 }
