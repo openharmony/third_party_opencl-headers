@@ -25,7 +25,6 @@ config("cl_public_config") {
   include_dirs = [
     "./",
     "include",
-    #"//base/hiviewdfx/hilog/interfaces/native/innerkits/include",
   ]
 }
 
@@ -40,4 +39,8 @@ ohos_shared_library("libcl") {
   output_extension = "so"
   part_name = "opencl"
   subsystem_name = "thirdparty"
+}
+
+group("cl_tests") {
+  deps = [ "tests:tests" ]
 }
