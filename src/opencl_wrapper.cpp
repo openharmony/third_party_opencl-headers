@@ -16,8 +16,10 @@
 #ifdef USE_OPENCL_WRAPPER
 
 #include "opencl_wrapper.h"
+#include <algorithm>
 #include <dlfcn.h>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -33,13 +35,12 @@ static const std::vector<std::string> g_opencl_library_paths = {
 #endif
 };
 
-
-static std::mutex gInitMutex;
+static std::mutex g_initMutex;
 bool isInit = false;
 void *handle_{nullptr};
 
 bool InitOpenCL() {
-    std::lock_guard<std::mutex> lock(gInitMutex);
+    std::lock_guard<std::mutex> lock(g_initMutex);
     if (isInit){
       return true;
     }
