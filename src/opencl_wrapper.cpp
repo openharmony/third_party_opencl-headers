@@ -30,14 +30,15 @@ static const std::vector<std::string> g_opencl_library_paths = {
 #if defined(__APPLE__) || defined(__MACOSX)
     "libOpenCL.so", "/System/Library/Frameworks/OpenCL.framework/OpenCL"
 #else
+    "/vendor/lib64/chipsetsdk/libGLES_mali.so",
     "/system/lib64/libGLES_mali.so",
     "libGLES_mali.so",
 #endif
 };
 
 static std::mutex g_initMutex;
-bool isInit = false;
-void *handle_{nullptr};
+static bool isInit = false;
+static void *handle_{nullptr};
 
 bool InitOpenCL() {
     std::lock_guard<std::mutex> lock(g_initMutex);
@@ -49,6 +50,9 @@ bool InitOpenCL() {
 }
 
 bool UnLoadOpenCLLibrary(void *handle) {
+#ifdef __MUSL__
+    return true;
+#else
     if (handle != nullptr) {
       if (dlclose(handle) != 0) {
         return false;
@@ -56,6 +60,7 @@ bool UnLoadOpenCLLibrary(void *handle) {
       return true;
     }
     return true;
+#endif
 }
 
 bool LoadLibraryFromPath(const std::string &library_path, void **handle_ptr) {
