@@ -52,9 +52,6 @@ bool InitOpenCL() {
 }
 
 bool UnLoadOpenCLLibrary(void *handle) {
-#ifdef __MUSL__
-    return true;
-#else
     if (handle != nullptr) {
       if (dlclose(handle) != 0) {
         return false;
@@ -62,7 +59,6 @@ bool UnLoadOpenCLLibrary(void *handle) {
       return true;
     }
     return true;
-#endif
 }
 
 bool LoadLibraryFromPath(const std::string &library_path, void **handle_ptr) {
@@ -79,7 +75,6 @@ bool LoadLibraryFromPath(const std::string &library_path, void **handle_ptr) {
 #define LOAD_OPENCL_FUNCTION_PTR(func_name)                                                    \
     func_name = reinterpret_cast<func_name##Func>(dlsym(*handle_ptr, #func_name));               \
     if (func_name == nullptr) {                                                                  \
-      UnLoadOpenCLLibrary(*handle_ptr);                                                          \
       return false;                                                                              \
     }
 
@@ -154,9 +149,6 @@ bool LoadLibraryFromPath(const std::string &library_path, void **handle_ptr) {
 bool LoadOpenCLLibrary(void **handle_ptr) {
     if (handle_ptr == nullptr) {
       return false;
-    }
-    if (*handle_ptr != nullptr) {
-      return true;
     }
     auto it =
       std::find_if(g_opencl_library_paths.begin(), g_opencl_library_paths.end(),
