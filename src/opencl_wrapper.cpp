@@ -38,15 +38,17 @@ static const std::vector<std::string> g_opencl_library_paths = {
 
 static std::mutex g_initMutex;
 static bool isInit = false;
+static bool loadSuccess = false;
 static void *handle_{nullptr};
 
 bool InitOpenCL() {
     std::lock_guard<std::mutex> lock(g_initMutex);
     if (isInit){
-      return true;
+      return loadSuccess;
     }
-    isInit = LoadOpenCLLibrary(&handle_);
-    return isInit;
+    isInit = true;
+    loadSuccess = LoadOpenCLLibrary(&handle_);
+    return loadSuccess;
 }
 
 bool UnLoadOpenCLLibrary(void *handle) {
