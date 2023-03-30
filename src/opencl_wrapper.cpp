@@ -30,22 +30,25 @@ static const std::vector<std::string> g_opencl_library_paths = {
 #if defined(__APPLE__) || defined(__MACOSX)
     "libOpenCL.so", "/System/Library/Frameworks/OpenCL.framework/OpenCL"
 #else
+    "/vendor/lib64/chipsetsdk/libGLES_mali.so"
     "/system/lib64/libGLES_mali.so",
     "libGLES_mali.so",
 #endif
 };
 
 static std::mutex g_initMutex;
-bool isInit = false;
-void *handle_{nullptr};
+static bool isInit = false;
+static bool loadSuccess = false;
+static void *handle_{nullptr};
 
 bool InitOpenCL() {
     std::lock_guard<std::mutex> lock(g_initMutex);
     if (isInit){
-      return true;
+      return loadSuccess;
     }
-    isInit = LoadOpenCLLibrary(&handle_);
-    return isInit;
+    isInit = true;
+    loadSuccess = LoadOpenCLLibrary(&handle_);
+    return loadSuccess;
 }
 
 bool UnLoadOpenCLLibrary(void *handle) {
@@ -72,7 +75,6 @@ bool LoadLibraryFromPath(const std::string &library_path, void **handle_ptr) {
 #define LOAD_OPENCL_FUNCTION_PTR(func_name)                                                    \
     func_name = reinterpret_cast<func_name##Func>(dlsym(*handle_ptr, #func_name));               \
     if (func_name == nullptr) {                                                                  \
-      UnLoadOpenCLLibrary(*handle_ptr);                                                          \
       return false;                                                                              \
     }
 
@@ -147,9 +149,6 @@ bool LoadLibraryFromPath(const std::string &library_path, void **handle_ptr) {
 bool LoadOpenCLLibrary(void **handle_ptr) {
     if (handle_ptr == nullptr) {
       return false;
-    }
-    if (*handle_ptr != nullptr) {
-      return true;
     }
     auto it =
       std::find_if(g_opencl_library_paths.begin(), g_opencl_library_paths.end(),
