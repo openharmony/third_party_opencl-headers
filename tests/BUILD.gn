@@ -22,126 +22,102 @@ config("cl_test_config") {
 }
 
 ohos_executable("test_cl_egl") {
-  sources = [
-    "test_cl_egl.h.c",
-  ]
+  sources = [ "test_cl_egl.h.c" ]
   configs = [ ":cl_test_config" ]
-  part_name = "opencl"
+  part_name = "opencl-headers"
   subsystem_name = "thirdparty"
 }
 
 ohos_executable("test_cl_ext_intel") {
-  sources = [
-    "test_cl_ext_intel.h.c",
-  ]
+  sources = [ "test_cl_ext_intel.h.c" ]
   configs = [ ":cl_test_config" ]
-  part_name = "opencl"
+  part_name = "opencl-headers"
   subsystem_name = "thirdparty"
 }
 
 ohos_executable("test_cl_ext") {
-  sources = [
-    "test_cl_ext.h.c",
-  ]
+  sources = [ "test_cl_ext.h.c" ]
   configs = [ ":cl_test_config" ]
-  part_name = "opencl"
+  part_name = "opencl-headers"
   subsystem_name = "thirdparty"
 }
 
 ohos_executable("test_cl_gl_ext") {
-  sources = [
-    "test_cl_gl_ext.h.c",
-  ]
+  sources = [ "test_cl_gl_ext.h.c" ]
   configs = [ ":cl_test_config" ]
-  part_name = "opencl"
+  part_name = "opencl-headers"
   subsystem_name = "thirdparty"
 }
 
 ohos_executable("test_cl_gl") {
-  sources = [
-    "test_cl_gl.h.c",
-  ]
+  sources = [ "test_cl_gl.h.c" ]
   configs = [ ":cl_test_config" ]
-  part_name = "opencl"
+  part_name = "opencl-headers"
   subsystem_name = "thirdparty"
 }
 
 ohos_executable("test_cl_half") {
-  sources = [
-    "test_cl_half.h.c",
-  ]
+  sources = [ "test_cl_half.h.c" ]
   configs = [ ":cl_test_config" ]
-  part_name = "opencl"
+  part_name = "opencl-headers"
   subsystem_name = "thirdparty"
 }
 
 ohos_executable("test_cl_icd") {
-  sources = [
-    "test_cl_icd.h.c",
-  ]
+  sources = [ "test_cl_icd.h.c" ]
   configs = [ ":cl_test_config" ]
-  part_name = "opencl"
+  part_name = "opencl-headers"
   subsystem_name = "thirdparty"
 }
 
 ohos_executable("test_cl_platform") {
-  sources = [
-    "test_cl_platform.h.c",
-  ]
+  sources = [ "test_cl_platform.h.c" ]
   configs = [ ":cl_test_config" ]
-  part_name = "opencl"
+  part_name = "opencl-headers"
   subsystem_name = "thirdparty"
 }
 
 ohos_executable("test_cl_version") {
-  sources = [
-    "test_cl_version.h.c",
-  ]
+  sources = [ "test_cl_version.h.c" ]
   configs = [ ":cl_test_config" ]
-  part_name = "opencl"
+  part_name = "opencl-headers"
   subsystem_name = "thirdparty"
 }
 
 ohos_executable("test_cl") {
-  sources = [
-    "test_cl.h.c",
-  ]
+  sources = [ "test_cl.h.c" ]
   configs = [ ":cl_test_config" ]
-  part_name = "opencl"
+  part_name = "opencl-headers"
   subsystem_name = "thirdparty"
 }
 
 ohos_executable("test_headers") {
-  sources = [
-    "test_headers.c",
-  ]
+  sources = [ "test_headers.c" ]
   configs = [ ":cl_test_config" ]
-  part_name = "opencl"
+  part_name = "opencl-headers"
   subsystem_name = "thirdparty"
 }
 
 ohos_executable("test_opencl") {
-  sources = [
-    "test_opencl.h.c",
-  ]
+  sources = [ "test_opencl.h.c" ]
   configs = [ ":cl_test_config" ]
-  part_name = "opencl"
+  part_name = "opencl-headers"
   subsystem_name = "thirdparty"
 }
 
 group("tests") {
-    deps = [ 
-        ":test_cl_egl",
-        ":test_cl_ext_intel",
-        ":test_cl_ext",
-        ":test_cl_gl_ext",
-        ":test_cl_gl",
-        ":test_cl_half",
-        ":test_cl_icd",
-        ":test_cl_platform",
-        ":test_cl_version",
-        ":test_cl",
-        ":test_headers",
-        ":test_opencl",
-    ]
+  deps = [
+    ":test_cl",
+    ":test_cl_egl",
+    ":test_cl_ext",
+    ":test_cl_ext_intel",
+    ":test_cl_gl",
+    ":test_cl_gl_ext",
+    ":test_cl_half",
+    ":test_cl_icd",
+    ":test_cl_platform",
+    ":test_cl_version",
+    ":test_headers",
+    ":test_opencl",
+  ]
 }
