@@ -30,14 +30,12 @@ config("cl_public_config") {
 
 ohos_shared_library("libcl") {
   visibility = [ "*" ]
-  sources = [
-    "src/opencl_wrapper.cpp",
-  ]
+  sources = [ "src/opencl_wrapper.cpp" ]
   configs = [ ":cl_config" ]
   public_configs = [ ":cl_public_config" ]
   output_name = "OpenCL"
   output_extension = "so"
-  part_name = "opencl"
+  part_name = "opencl-headers"
   subsystem_name = "thirdparty"
 }
 
