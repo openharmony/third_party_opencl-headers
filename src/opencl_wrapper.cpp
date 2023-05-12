@@ -1,5 +1,5 @@
-/* 
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+/*
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,19 +37,19 @@ static const std::vector<std::string> g_opencl_library_paths = {
 };
 
 static std::mutex g_initMutex;
-static bool isInit = false;
-static bool loadSuccess = false;
-static void *handle_{nullptr};
+static bool g_isInit = false;
+static bool g_loadSuccess = false;
+static void *g_handle{nullptr};
 
 bool InitOpenCL()
 {
     std::lock_guard<std::mutex> lock(g_initMutex);
-    if (isInit) {
-        return loadSuccess;
+    if (g_isInit) {
+        return g_loadSuccess;
     }
-    isInit = true;
-    loadSuccess = LoadOpenCLLibrary(&handle_);
-    return loadSuccess;
+    g_isInit = true;
+    g_loadSuccess = LoadOpenCLLibrary(&g_handle);
+    return g_loadSuccess;
 }
 
 bool UnLoadOpenCLLibrary(void *handle)
@@ -63,7 +63,7 @@ bool UnLoadOpenCLLibrary(void *handle)
     return true;
 }
 
-bool LoadLibraryFromPath(const std::string &library_path, void **handle_ptr)
+static bool LoadLibraryFromPath(const std::string &library_path, void **handle_ptr)
 {
     if (handle_ptr == nullptr) {
         return false;
@@ -76,9 +76,9 @@ bool LoadLibraryFromPath(const std::string &library_path, void **handle_ptr)
 
 // load function ptr use dlopen and dlsym.
 #define LOAD_OPENCL_FUNCTION_PTR(func_name)                                                    \
-    func_name = reinterpret_cast<func_name##Func>(dlsym(*handle_ptr, #func_name));               \
-    if (func_name == nullptr) {                                                                  \
-        return false;                                                                              \
+    func_name = reinterpret_cast<func_name##Func>(dlsym(*handle_ptr, #func_name));             \
+    if (func_name == nullptr) {                                                                \
+        return false;                                                                          \
     }
 
     LOAD_OPENCL_FUNCTION_PTR(clGetPlatformIDs);
@@ -130,7 +130,7 @@ bool LoadLibraryFromPath(const std::string &library_path, void **handle_ptr)
     LOAD_OPENCL_FUNCTION_PTR(clEnqueueCopyImage);
     LOAD_OPENCL_FUNCTION_PTR(clEnqueueCopyBufferToImage);
     LOAD_OPENCL_FUNCTION_PTR(clEnqueueCopyImageToBuffer);
-#if CL_TARGET_OPENCL_VERSION >= 120
+#if defined(CL_TARGET_OPENCL_VERSION) && CL_TARGET_OPENCL_VERSION >= 120
     LOAD_OPENCL_FUNCTION_PTR(clRetainDevice);
     LOAD_OPENCL_FUNCTION_PTR(clReleaseDevice);
     LOAD_OPENCL_FUNCTION_PTR(clCreateImage);
@@ -215,13 +215,13 @@ CL_DEFINE_FUNC_PTR(clGetEventProfilingInfo);
 CL_DEFINE_FUNC_PTR(clGetImageInfo);
 CL_DEFINE_FUNC_PTR(clEnqueueCopyBufferToImage);
 CL_DEFINE_FUNC_PTR(clEnqueueCopyImageToBuffer);
-#if CL_TARGET_OPENCL_VERSION >= 120
+#if defined(CL_TARGET_OPENCL_VERSION) && CL_TARGET_OPENCL_VERSION >= 120
 CL_DEFINE_FUNC_PTR(clRetainDevice);
 CL_DEFINE_FUNC_PTR(clReleaseDevice);
 CL_DEFINE_FUNC_PTR(clCreateImage);
 CL_DEFINE_FUNC_PTR(clEnqueueFillImage);
 #endif
-#if CL_TARGET_OPENCL_VERSION >= 200
+#if defined(CL_TARGET_OPENCL_VERSION) && CL_TARGET_OPENCL_VERSION >= 200
 CL_DEFINE_FUNC_PTR(clGetKernelSubGroupInfoKHR);
 CL_DEFINE_FUNC_PTR(clCreateCommandQueueWithProperties);
 CL_DEFINE_FUNC_PTR(clGetExtensionFunctionAddress);
@@ -733,7 +733,7 @@ cl_int clEnqueueCopyImageToBuffer(cl_command_queue command_queue, cl_mem src_ima
                 event_wait_list, event);
 }
 
-#if CL_TARGET_OPENCL_VERSION >= 120
+#if defined(CL_TARGET_OPENCL_VERSION) && CL_TARGET_OPENCL_VERSION >= 120
 
 // clRetainDevice wrapper, use OpenCLWrapper function.
 cl_int clRetainDevice(cl_device_id device)
@@ -775,7 +775,7 @@ cl_int clEnqueueFillImage(cl_command_queue command_queue, cl_mem image, const vo
 
 #endif
 
-#if CL_TARGET_OPENCL_VERSION >= 200
+#if defined(CL_TARGET_OPENCL_VERSION) && CL_TARGET_OPENCL_VERSION >= 200
 
 // clCreateCommandQueueWithProperties wrapper, use OpenCLWrapper function.
 cl_command_queue clCreateCommandQueueWithProperties(cl_context context, cl_device_id device,
