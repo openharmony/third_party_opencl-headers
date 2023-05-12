@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,41 +41,44 @@ static bool isInit = false;
 static bool loadSuccess = false;
 static void *handle_{nullptr};
 
-bool InitOpenCL() {
+bool InitOpenCL()
+{
     std::lock_guard<std::mutex> lock(g_initMutex);
-    if (isInit){
-      return loadSuccess;
+    if (isInit) {
+        return loadSuccess;
     }
     isInit = true;
     loadSuccess = LoadOpenCLLibrary(&handle_);
     return loadSuccess;
 }
 
-bool UnLoadOpenCLLibrary(void *handle) {
+bool UnLoadOpenCLLibrary(void *handle)
+{
     if (handle != nullptr) {
-      if (dlclose(handle) != 0) {
-        return false;
-      }
-      return true;
+        if (dlclose(handle) != 0) {
+            return false;
+        }
+        return true;
     }
     return true;
 }
 
-bool LoadLibraryFromPath(const std::string &library_path, void **handle_ptr) {
+bool LoadLibraryFromPath(const std::string &library_path, void **handle_ptr)
+{
     if (handle_ptr == nullptr) {
-      return false;
+        return false;
     }
 
     *handle_ptr = dlopen(library_path.c_str(), RTLD_NOW | RTLD_LOCAL);
     if (*handle_ptr == nullptr) {
-      return false;
+        return false;
     }
 
 // load function ptr use dlopen and dlsym.
 #define LOAD_OPENCL_FUNCTION_PTR(func_name)                                                    \
     func_name = reinterpret_cast<func_name##Func>(dlsym(*handle_ptr, #func_name));               \
     if (func_name == nullptr) {                                                                  \
-      return false;                                                                              \
+        return false;                                                                              \
     }
 
     LOAD_OPENCL_FUNCTION_PTR(clGetPlatformIDs);
@@ -133,7 +136,7 @@ bool LoadLibraryFromPath(const std::string &library_path, void **handle_ptr) {
     LOAD_OPENCL_FUNCTION_PTR(clCreateImage);
     LOAD_OPENCL_FUNCTION_PTR(clEnqueueFillImage);
 #endif
-#if CL_TARGET_OPENCL_VERSION >= 200
+#if defined(CL_TARGET_OPENCL_VERSION) && CL_TARGET_OPENCL_VERSION >= 200
     LOAD_OPENCL_FUNCTION_PTR(clCreateCommandQueueWithProperties);
     LOAD_OPENCL_FUNCTION_PTR(clGetExtensionFunctionAddress);
     LOAD_OPENCL_FUNCTION_PTR(clSVMAlloc);
@@ -146,15 +149,16 @@ bool LoadLibraryFromPath(const std::string &library_path, void **handle_ptr) {
     return true;
 }
 // load default library path
-bool LoadOpenCLLibrary(void **handle_ptr) {
+bool LoadOpenCLLibrary(void **handle_ptr)
+{
     if (handle_ptr == nullptr) {
-      return false;
+        return false;
     }
     auto it =
       std::find_if(g_opencl_library_paths.begin(), g_opencl_library_paths.end(),
                    [&](const std::string &lib_path) { return OHOS::LoadLibraryFromPath(lib_path, handle_ptr); });
     if (it != g_opencl_library_paths.end()) {
-      return true;
+        return true;
     }
     return false;
 }
@@ -232,7 +236,8 @@ CL_DEFINE_FUNC_PTR(clSetKernelArgSVMPointer);
 }  // namespace OHOS
 
 // clGetPlatformIDs wrapper, use OpenCLWrapper function. use OpenCLWrapper function.
-cl_int clGetPlatformIDs(cl_uint num_entries, cl_platform_id *platforms, cl_uint *num_platforms) {
+cl_int clGetPlatformIDs(cl_uint num_entries, cl_platform_id *platforms, cl_uint *num_platforms)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clGetPlatformIDs;
     MS_ASSERT(func != nullptr);
@@ -241,7 +246,8 @@ cl_int clGetPlatformIDs(cl_uint num_entries, cl_platform_id *platforms, cl_uint 
 
 // clGetPlatformInfo wrapper, use OpenCLWrapper function. use OpenCLWrapper function.
 cl_int clGetPlatformInfo(cl_platform_id platform, cl_platform_info param_name, size_t param_value_size,
-                         void *param_value, size_t *param_value_size_ret) {
+                         void *param_value, size_t *param_value_size_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clGetPlatformInfo;
     MS_ASSERT(func != nullptr);
@@ -250,7 +256,8 @@ cl_int clGetPlatformInfo(cl_platform_id platform, cl_platform_info param_name, s
 
 // clGetDeviceIDs wrapper, use OpenCLWrapper function.
 cl_int clGetDeviceIDs(cl_platform_id platform, cl_device_type device_type, cl_uint num_entries, cl_device_id *devices,
-                      cl_uint *num_devices) {
+                      cl_uint *num_devices)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clGetDeviceIDs;
     MS_ASSERT(func != nullptr);
@@ -259,7 +266,8 @@ cl_int clGetDeviceIDs(cl_platform_id platform, cl_device_type device_type, cl_ui
 
 // clGetDeviceInfo wrapper, use OpenCLWrapper function.
 cl_int clGetDeviceInfo(cl_device_id device, cl_device_info param_name, size_t param_value_size, void *param_value,
-                       size_t *param_value_size_ret) {
+                       size_t *param_value_size_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clGetDeviceInfo;
     MS_ASSERT(func != nullptr);
@@ -269,7 +277,8 @@ cl_int clGetDeviceInfo(cl_device_id device, cl_device_info param_name, size_t pa
 // clCreateContext wrapper, use OpenCLWrapper function.
 cl_context clCreateContext(const cl_context_properties *properties, cl_uint num_devices, const cl_device_id *devices,
                            void(CL_CALLBACK *pfn_notify)(const char *, const void *, size_t, void *), void *user_data,
-                           cl_int *errcode_ret) {
+                           cl_int *errcode_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clCreateContext;
     MS_ASSERT(func != nullptr);
@@ -279,7 +288,8 @@ cl_context clCreateContext(const cl_context_properties *properties, cl_uint num_
 // clCreateContextFromType wrapper, use OpenCLWrapper function.
 cl_context clCreateContextFromType(const cl_context_properties *properties, cl_device_type device_type,
                                    void(CL_CALLBACK *pfn_notify)(const char *, const void *, size_t, void *),
-                                   void *user_data, cl_int *errcode_ret) {
+                                   void *user_data, cl_int *errcode_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clCreateContextFromType;
     MS_ASSERT(func != nullptr);
@@ -287,7 +297,8 @@ cl_context clCreateContextFromType(const cl_context_properties *properties, cl_d
 }
 
 // clRetainContext wrapper, use OpenCLWrapper function.
-cl_int clRetainContext(cl_context context) {
+cl_int clRetainContext(cl_context context)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clRetainContext;
     MS_ASSERT(func != nullptr);
@@ -295,7 +306,8 @@ cl_int clRetainContext(cl_context context) {
 }
 
 // clReleaseContext wrapper, use OpenCLWrapper function.
-cl_int clReleaseContext(cl_context context) {
+cl_int clReleaseContext(cl_context context)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clReleaseContext;
     MS_ASSERT(func != nullptr);
@@ -304,7 +316,8 @@ cl_int clReleaseContext(cl_context context) {
 
 // clGetContextInfo wrapper, use OpenCLWrapper function.
 cl_int clGetContextInfo(cl_context context, cl_context_info param_name, size_t param_value_size, void *param_value,
-                        size_t *param_value_size_ret) {
+                        size_t *param_value_size_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clGetContextInfo;
     MS_ASSERT(func != nullptr);
@@ -313,7 +326,8 @@ cl_int clGetContextInfo(cl_context context, cl_context_info param_name, size_t p
 
 // clCreateProgramWithSource wrapper, use OpenCLWrapper function.
 cl_program clCreateProgramWithSource(cl_context context, cl_uint count, const char **strings, const size_t *lengths,
-                                     cl_int *errcode_ret) {
+                                     cl_int *errcode_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clCreateProgramWithSource;
     MS_ASSERT(func != nullptr);
@@ -323,7 +337,8 @@ cl_program clCreateProgramWithSource(cl_context context, cl_uint count, const ch
 // clCreateProgramWithBinary wrapper, use OpenCLWrapper function.
 cl_program clCreateProgramWithBinary(cl_context context, cl_uint num_devices, const cl_device_id *devices_list,
                                      const size_t *lengths, const unsigned char **binaries, cl_int *binary_status,
-                                     cl_int *errcode_ret) {
+                                     cl_int *errcode_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clCreateProgramWithBinary;
     MS_ASSERT(func != nullptr);
@@ -332,7 +347,8 @@ cl_program clCreateProgramWithBinary(cl_context context, cl_uint num_devices, co
 
 // clGetProgramInfo wrapper, use OpenCLWrapper function.
 cl_int clGetProgramInfo(cl_program program, cl_program_info param_name, size_t param_value_size, void *param_value,
-                        size_t *param_value_size_ret) {
+                        size_t *param_value_size_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clGetProgramInfo;
     MS_ASSERT(func != nullptr);
@@ -341,7 +357,8 @@ cl_int clGetProgramInfo(cl_program program, cl_program_info param_name, size_t p
 
 // clGetProgramBuildInfo wrapper, use OpenCLWrapper function.
 cl_int clGetProgramBuildInfo(cl_program program, cl_device_id device, cl_program_build_info param_name,
-                             size_t param_value_size, void *param_value, size_t *param_value_size_ret) {
+                             size_t param_value_size, void *param_value, size_t *param_value_size_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clGetProgramBuildInfo;
     MS_ASSERT(func != nullptr);
@@ -349,7 +366,8 @@ cl_int clGetProgramBuildInfo(cl_program program, cl_device_id device, cl_program
 }
 
 // clRetainProgram wrapper, use OpenCLWrapper function.
-cl_int clRetainProgram(cl_program program) {
+cl_int clRetainProgram(cl_program program)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clRetainProgram;
     MS_ASSERT(func != nullptr);
@@ -357,7 +375,8 @@ cl_int clRetainProgram(cl_program program) {
 }
 
 // clReleaseProgram wrapper, use OpenCLWrapper function.
-cl_int clReleaseProgram(cl_program program) {
+cl_int clReleaseProgram(cl_program program)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clReleaseProgram;
     MS_ASSERT(func != nullptr);
@@ -366,7 +385,8 @@ cl_int clReleaseProgram(cl_program program) {
 
 // clBuildProgram wrapper, use OpenCLWrapper function.
 cl_int clBuildProgram(cl_program program, cl_uint num_devices, const cl_device_id *device_list, const char *options,
-                      void(CL_CALLBACK *pfn_notify)(cl_program program, void *user_data), void *user_data) {
+                      void(CL_CALLBACK *pfn_notify)(cl_program program, void *user_data), void *user_data)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clBuildProgram;
     MS_ASSERT(func != nullptr);
@@ -374,7 +394,8 @@ cl_int clBuildProgram(cl_program program, cl_uint num_devices, const cl_device_i
 }
 
 // clCreateKernel wrapper, use OpenCLWrapper function.
-cl_kernel clCreateKernel(cl_program program, const char *kernelName, cl_int *errcode_ret) {
+cl_kernel clCreateKernel(cl_program program, const char *kernelName, cl_int *errcode_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clCreateKernel;
     MS_ASSERT(func != nullptr);
@@ -382,7 +403,8 @@ cl_kernel clCreateKernel(cl_program program, const char *kernelName, cl_int *err
 }
 
 // clRetainKernel wrapper, use OpenCLWrapper function.
-cl_int clRetainKernel(cl_kernel kernel) {
+cl_int clRetainKernel(cl_kernel kernel)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clRetainKernel;
     MS_ASSERT(func != nullptr);
@@ -390,7 +412,8 @@ cl_int clRetainKernel(cl_kernel kernel) {
 }
 
 // clReleaseKernel wrapper, use OpenCLWrapper function.
-cl_int clReleaseKernel(cl_kernel kernel) {
+cl_int clReleaseKernel(cl_kernel kernel)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clReleaseKernel;
     MS_ASSERT(func != nullptr);
@@ -398,7 +421,8 @@ cl_int clReleaseKernel(cl_kernel kernel) {
 }
 
 // clSetKernelArg wrapper, use OpenCLWrapper function.
-cl_int clSetKernelArg(cl_kernel kernel, cl_uint arg_index, size_t arg_size, const void *arg_value) {
+cl_int clSetKernelArg(cl_kernel kernel, cl_uint arg_index, size_t arg_size, const void *arg_value)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clSetKernelArg;
     MS_ASSERT(func != nullptr);
@@ -406,7 +430,8 @@ cl_int clSetKernelArg(cl_kernel kernel, cl_uint arg_index, size_t arg_size, cons
 }
 
 // clCreateBuffer wrapper, use OpenCLWrapper function.
-cl_mem clCreateBuffer(cl_context context, cl_mem_flags flags, size_t size, void *host_ptr, cl_int *errcode_ret) {
+cl_mem clCreateBuffer(cl_context context, cl_mem_flags flags, size_t size, void *host_ptr, cl_int *errcode_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clCreateBuffer;
     MS_ASSERT(func != nullptr);
@@ -414,7 +439,8 @@ cl_mem clCreateBuffer(cl_context context, cl_mem_flags flags, size_t size, void 
 }
 
 // clRetainMemObject wrapper, use OpenCLWrapper function.
-cl_int clRetainMemObject(cl_mem memobj) {
+cl_int clRetainMemObject(cl_mem memobj)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clRetainMemObject;
     MS_ASSERT(func != nullptr);
@@ -422,7 +448,8 @@ cl_int clRetainMemObject(cl_mem memobj) {
 }
 
 // clReleaseMemObject wrapper, use OpenCLWrapper function.
-cl_int clReleaseMemObject(cl_mem memobj) {
+cl_int clReleaseMemObject(cl_mem memobj)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clReleaseMemObject;
     MS_ASSERT(func != nullptr);
@@ -431,7 +458,8 @@ cl_int clReleaseMemObject(cl_mem memobj) {
 
 // clGetImageInfo wrapper, use OpenCLWrapper function.
 cl_int clGetImageInfo(cl_mem image, cl_image_info param_name, size_t param_value_size, void *param_value,
-                      size_t *param_value_size_ret) {
+                      size_t *param_value_size_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clGetImageInfo;
     MS_ASSERT(func != nullptr);
@@ -439,7 +467,8 @@ cl_int clGetImageInfo(cl_mem image, cl_image_info param_name, size_t param_value
 }
 
 // clRetainCommandQueue wrapper, use OpenCLWrapper function.
-cl_int clRetainCommandQueue(cl_command_queue command_queue) {
+cl_int clRetainCommandQueue(cl_command_queue command_queue)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clRetainCommandQueue;
     MS_ASSERT(func != nullptr);
@@ -447,7 +476,8 @@ cl_int clRetainCommandQueue(cl_command_queue command_queue) {
 }
 
 // clReleaseCommandQueue wrapper, use OpenCLWrapper function.
-cl_int clReleaseCommandQueue(cl_command_queue command_queue) {
+cl_int clReleaseCommandQueue(cl_command_queue command_queue)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clReleaseCommandQueue;
     MS_ASSERT(func != nullptr);
@@ -457,72 +487,80 @@ cl_int clReleaseCommandQueue(cl_command_queue command_queue) {
 // clEnqueueReadBuffer wrapper, use OpenCLWrapper function.
 cl_int clEnqueueReadBuffer(cl_command_queue command_queue, cl_mem buffer, cl_bool blocking_read, size_t offset,
                            size_t size, void *ptr, cl_uint num_events_in_wait_list, const cl_event *event_wait_list,
-                           cl_event *event) {
+                           cl_event *event)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clEnqueueReadBuffer;
     MS_ASSERT(func != nullptr);
-    return func(command_queue, buffer, blocking_read, offset, size, ptr, num_events_in_wait_list, event_wait_list, event);
+    return func(command_queue, buffer, blocking_read, offset, size, ptr, num_events_in_wait_list,
+                event_wait_list, event);
 }
 
 // clEnqueueWriteBuffer wrapper, use OpenCLWrapper function.
 cl_int clEnqueueWriteBuffer(cl_command_queue command_queue, cl_mem buffer, cl_bool blocking_write, size_t offset,
                             size_t size, const void *ptr, cl_uint num_events_in_wait_list,
-                            const cl_event *event_wait_list, cl_event *event) {
+                            const cl_event *event_wait_list, cl_event *event)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clEnqueueWriteBuffer;
     MS_ASSERT(func != nullptr);
     return func(command_queue, buffer, blocking_write, offset, size, ptr, num_events_in_wait_list, event_wait_list,
-              event);
+                event);
 }
 
 // clEnqueueWriteImage wrapper, use OpenCLWrapper function.
 cl_int clEnqueueWriteImage(cl_command_queue command_queue, cl_mem image, cl_bool blocking_write, const size_t *origin,
                            const size_t *region, size_t input_row_pitch, size_t input_slice_pitch, const void *ptr,
-                           cl_uint num_events_in_wait_list, const cl_event *event_wait_list, cl_event *event) {
+                           cl_uint num_events_in_wait_list, const cl_event *event_wait_list, cl_event *event)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clEnqueueWriteImage;
     MS_ASSERT(func != nullptr);
     return func(command_queue, image, blocking_write, origin, region, input_row_pitch, input_slice_pitch, ptr,
-              num_events_in_wait_list, event_wait_list, event);
+                num_events_in_wait_list, event_wait_list, event);
 }
 
 // clEnqueueReadImage wrapper, use OpenCLWrapper function.
 cl_int clEnqueueReadImage(cl_command_queue command_queue, cl_mem image, cl_bool blocking_read, const size_t *origin,
                           const size_t *region, size_t row_pitch, size_t slice_pitch, void *ptr,
-                          cl_uint num_events_in_wait_list, const cl_event *event_wait_list, cl_event *event) {
+                          cl_uint num_events_in_wait_list, const cl_event *event_wait_list, cl_event *event)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clEnqueueReadImage;
     MS_ASSERT(func != nullptr);
-    return func(command_queue, image, blocking_read, origin, region, row_pitch, slice_pitch, ptr, num_events_in_wait_list,
-              event_wait_list, event);
+    return func(command_queue, image, blocking_read, origin, region, row_pitch, slice_pitch, ptr,
+                num_events_in_wait_list, event_wait_list, event);
 }
 
 // clEnqueueMapBuffer wrapper, use OpenCLWrapper function.
 void *clEnqueueMapBuffer(cl_command_queue command_queue, cl_mem buffer, cl_bool blocking_map, cl_map_flags map_flags,
                          size_t offset, size_t size, cl_uint num_events_in_wait_list, const cl_event *event_wait_list,
-                         cl_event *event, cl_int *errcode_ret) {
+                         cl_event *event, cl_int *errcode_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clEnqueueMapBuffer;
     MS_ASSERT(func != nullptr);
     return func(command_queue, buffer, blocking_map, map_flags, offset, size, num_events_in_wait_list, event_wait_list,
-              event, errcode_ret);
+                event, errcode_ret);
 }
 
 // clEnqueueMapImage wrapper, use OpenCLWrapper function.
 void *clEnqueueMapImage(cl_command_queue command_queue, cl_mem image, cl_bool blocking_map, cl_map_flags map_flags,
                         const size_t *origin, const size_t *region, size_t *image_row_pitch, size_t *image_slice_pitch,
                         cl_uint num_events_in_wait_list, const cl_event *event_wait_list, cl_event *event,
-                        cl_int *errcode_ret) {
+                        cl_int *errcode_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clEnqueueMapImage;
     MS_ASSERT(func != nullptr);
     return func(command_queue, image, blocking_map, map_flags, origin, region, image_row_pitch, image_slice_pitch,
-              num_events_in_wait_list, event_wait_list, event, errcode_ret);
+                num_events_in_wait_list, event_wait_list, event, errcode_ret);
 }
 
 // clEnqueueUnmapMemObject wrapper, use OpenCLWrapper function.
 cl_int clEnqueueUnmapMemObject(cl_command_queue command_queue, cl_mem memobj, void *mapped_ptr,
-                               cl_uint num_events_in_wait_list, const cl_event *event_wait_list, cl_event *event) {
+                               cl_uint num_events_in_wait_list, const cl_event *event_wait_list, cl_event *event)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clEnqueueUnmapMemObject;
     MS_ASSERT(func != nullptr);
@@ -531,7 +569,8 @@ cl_int clEnqueueUnmapMemObject(cl_command_queue command_queue, cl_mem memobj, vo
 
 // clGetKernelWorkGroupInfo wrapper, use OpenCLWrapper function.
 cl_int clGetKernelWorkGroupInfo(cl_kernel kernel, cl_device_id device, cl_kernel_work_group_info param_name,
-                                size_t param_value_size, void *param_value, size_t *param_value_size_ret) {
+                                size_t param_value_size, void *param_value, size_t *param_value_size_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clGetKernelWorkGroupInfo;
     MS_ASSERT(func != nullptr);
@@ -540,7 +579,8 @@ cl_int clGetKernelWorkGroupInfo(cl_kernel kernel, cl_device_id device, cl_kernel
 
 // clGetEventProfilingInfo wrapper, use OpenCLWrapper function.
 cl_int clGetEventProfilingInfo(cl_event event, cl_profiling_info param_name, size_t param_value_size, void *param_value,
-                               size_t *param_value_size_ret) {
+                               size_t *param_value_size_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clGetEventProfilingInfo;
     MS_ASSERT(func != nullptr);
@@ -551,16 +591,18 @@ cl_int clGetEventProfilingInfo(cl_event event, cl_profiling_info param_name, siz
 cl_int clEnqueueNDRangeKernel(cl_command_queue command_queue, cl_kernel kernel, cl_uint work_dim,
                               const size_t *global_work_offset, const size_t *global_work_size,
                               const size_t *local_work_size, cl_uint num_events_in_wait_list,
-                              const cl_event *event_wait_list, cl_event *event) {
+                              const cl_event *event_wait_list, cl_event *event)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clEnqueueNDRangeKernel;
     MS_ASSERT(func != nullptr);
     return func(command_queue, kernel, work_dim, global_work_offset, global_work_size, local_work_size,
-              num_events_in_wait_list, event_wait_list, event);
+                num_events_in_wait_list, event_wait_list, event);
 }
 
 // clWaitForEvents wrapper, use OpenCLWrapper function.
-cl_int clWaitForEvents(cl_uint num_events, const cl_event *event_list) {
+cl_int clWaitForEvents(cl_uint num_events, const cl_event *event_list)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clWaitForEvents;
     MS_ASSERT(func != nullptr);
@@ -568,7 +610,8 @@ cl_int clWaitForEvents(cl_uint num_events, const cl_event *event_list) {
 }
 
 // clRetainEvent wrapper, use OpenCLWrapper function.
-cl_int clRetainEvent(cl_event event) {
+cl_int clRetainEvent(cl_event event)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clRetainEvent;
     MS_ASSERT(func != nullptr);
@@ -576,7 +619,8 @@ cl_int clRetainEvent(cl_event event) {
 }
 
 // clReleaseEvent wrapper, use OpenCLWrapper function.
-cl_int clReleaseEvent(cl_event event) {
+cl_int clReleaseEvent(cl_event event)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clReleaseEvent;
     MS_ASSERT(func != nullptr);
@@ -585,7 +629,8 @@ cl_int clReleaseEvent(cl_event event) {
 
 // clGetEventInfo wrapper, use OpenCLWrapper function.
 cl_int clGetEventInfo(cl_event event, cl_event_info param_name, size_t param_value_size, void *param_value,
-                      size_t *param_value_size_ret) {
+                      size_t *param_value_size_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clGetEventInfo;
     MS_ASSERT(func != nullptr);
@@ -593,7 +638,8 @@ cl_int clGetEventInfo(cl_event event, cl_event_info param_name, size_t param_val
 }
 
 // clFlush wrapper, use OpenCLWrapper function.
-cl_int clFlush(cl_command_queue command_queue) {
+cl_int clFlush(cl_command_queue command_queue)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clFlush;
     MS_ASSERT(func != nullptr);
@@ -601,7 +647,8 @@ cl_int clFlush(cl_command_queue command_queue) {
 }
 
 // clFinish wrapper, use OpenCLWrapper function.
-cl_int clFinish(cl_command_queue command_queue) {
+cl_int clFinish(cl_command_queue command_queue)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clFinish;
     MS_ASSERT(func != nullptr);
@@ -610,7 +657,8 @@ cl_int clFinish(cl_command_queue command_queue) {
 
 // clCreateImage2D wrapper, use OpenCLWrapper function.
 cl_mem clCreateImage2D(cl_context context, cl_mem_flags flags, const cl_image_format *image_format, size_t imageWidth,
-                       size_t imageHeight, size_t image_row_pitch, void *host_ptr, cl_int *errcode_ret) {
+                       size_t imageHeight, size_t image_row_pitch, void *host_ptr, cl_int *errcode_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clCreateImage2D;
     MS_ASSERT(func != nullptr);
@@ -620,17 +668,19 @@ cl_mem clCreateImage2D(cl_context context, cl_mem_flags flags, const cl_image_fo
 // clCreateImage3D wrapper, use OpenCLWrapper function.
 cl_mem clCreateImage3D(cl_context context, cl_mem_flags flags, const cl_image_format *image_format, size_t imageWidth,
                        size_t imageHeight, size_t imageDepth, size_t image_row_pitch, size_t image_slice_pitch,
-                       void *host_ptr, cl_int *errcode_ret) {
+                       void *host_ptr, cl_int *errcode_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clCreateImage3D;
     MS_ASSERT(func != nullptr);
     return func(context, flags, image_format, imageWidth, imageHeight, imageDepth, image_row_pitch, image_slice_pitch,
-              host_ptr, errcode_ret);
+                host_ptr, errcode_ret);
 }
 
 // clCreateCommandQueue wrapper, use OpenCLWrapper function.
 cl_command_queue clCreateCommandQueue(cl_context context, cl_device_id device, cl_command_queue_properties properties,
-                                      cl_int *errcode_ret) {
+                                      cl_int *errcode_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clCreateCommandQueue;
     MS_ASSERT(func != nullptr);
@@ -639,7 +689,8 @@ cl_command_queue clCreateCommandQueue(cl_context context, cl_device_id device, c
 
 // clGetCommandQueueInfo wrapper, use OpenCLWrapper function.
 cl_int clGetCommandQueueInfo(cl_command_queue command_queue, cl_command_queue_info param_name, size_t param_value_size,
-                             void *param_value, size_t *param_value_size_ret) {
+                             void *param_value, size_t *param_value_size_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clGetCommandQueueInfo;
     MS_ASSERT(func != nullptr);
@@ -649,40 +700,44 @@ cl_int clGetCommandQueueInfo(cl_command_queue command_queue, cl_command_queue_in
 // clEnqueueCopyImage wrapper, use OpenCLWrapper function.
 cl_int clEnqueueCopyImage(cl_command_queue queue, cl_mem src_image, cl_mem dst_image, const size_t *src_origin,
                           const size_t *dst_origin, const size_t *region, cl_uint num_events_in_wait_list,
-                          const cl_event *event_wait_list, cl_event *event) {
+                          const cl_event *event_wait_list, cl_event *event)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clEnqueueCopyImage;
     MS_ASSERT(func != nullptr);
     return func(queue, src_image, dst_image, src_origin, dst_origin, region, num_events_in_wait_list, event_wait_list,
-              event);
+                event);
 }
 
 // clEnqueueCopyBufferToImage wrapper, use OpenCLWrapper function.
 cl_int clEnqueueCopyBufferToImage(cl_command_queue command_queue, cl_mem src_buffer, cl_mem dst_image,
                                   size_t src_offset, const size_t *dst_origin, const size_t *region,
-                                  cl_uint num_events_in_wait_list, const cl_event *event_wait_list, cl_event *event) {
+                                  cl_uint num_events_in_wait_list, const cl_event *event_wait_list, cl_event *event)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clEnqueueCopyBufferToImage;
     MS_ASSERT(func != nullptr);
     return func(command_queue, src_buffer, dst_image, src_offset, dst_origin, region, num_events_in_wait_list,
-              event_wait_list, event);
+                event_wait_list, event);
 }
 
 // clEnqueueCopyImageToBuffer wrapper, use OpenCLWrapper function.
 cl_int clEnqueueCopyImageToBuffer(cl_command_queue command_queue, cl_mem src_image, cl_mem dst_buffer,
                                   const size_t *src_origin, const size_t *region, size_t dst_offset,
-                                  cl_uint num_events_in_wait_list, const cl_event *event_wait_list, cl_event *event) {
+                                  cl_uint num_events_in_wait_list, const cl_event *event_wait_list, cl_event *event)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clEnqueueCopyImageToBuffer;
     MS_ASSERT(func != nullptr);
     return func(command_queue, src_image, dst_buffer, src_origin, region, dst_offset, num_events_in_wait_list,
-              event_wait_list, event);
+                event_wait_list, event);
 }
 
 #if CL_TARGET_OPENCL_VERSION >= 120
 
 // clRetainDevice wrapper, use OpenCLWrapper function.
-cl_int clRetainDevice(cl_device_id device) {
+cl_int clRetainDevice(cl_device_id device)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clRetainDevice;
     MS_ASSERT(func != nullptr);
@@ -690,7 +745,8 @@ cl_int clRetainDevice(cl_device_id device) {
 }
 
 // clReleaseDevice wrapper, use OpenCLWrapper function.
-cl_int clReleaseDevice(cl_device_id device) {
+cl_int clReleaseDevice(cl_device_id device)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clReleaseDevice;
     MS_ASSERT(func != nullptr);
@@ -699,7 +755,8 @@ cl_int clReleaseDevice(cl_device_id device) {
 
 // clCreateImage wrapper, use OpenCLWrapper function.
 cl_mem clCreateImage(cl_context context, cl_mem_flags flags, const cl_image_format *image_format,
-                     const cl_image_desc *image_desc, void *host_ptr, cl_int *errcode_ret) {
+                     const cl_image_desc *image_desc, void *host_ptr, cl_int *errcode_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clCreateImage;
     MS_ASSERT(func != nullptr);
@@ -708,7 +765,8 @@ cl_mem clCreateImage(cl_context context, cl_mem_flags flags, const cl_image_form
 
 cl_int clEnqueueFillImage(cl_command_queue command_queue, cl_mem image, const void *fill_color, const size_t *origin,
                           const size_t *region, cl_uint num_events_in_wait_list, const cl_event *event_wait_list,
-                          cl_event *event) {
+                          cl_event *event)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clEnqueueFillImage;
     MS_ASSERT(func != nullptr);
@@ -721,7 +779,8 @@ cl_int clEnqueueFillImage(cl_command_queue command_queue, cl_mem image, const vo
 
 // clCreateCommandQueueWithProperties wrapper, use OpenCLWrapper function.
 cl_command_queue clCreateCommandQueueWithProperties(cl_context context, cl_device_id device,
-                                                    const cl_queue_properties *properties, cl_int *errcode_ret) {
+                                                    const cl_queue_properties *properties, cl_int *errcode_ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clCreateCommandQueueWithProperties;
     MS_ASSERT(func != nullptr);
@@ -729,14 +788,16 @@ cl_command_queue clCreateCommandQueueWithProperties(cl_context context, cl_devic
 }
 
 // clGetExtensionFunctionAddress wrapper, use OpenCLWrapper function.
-void *clGetExtensionFunctionAddress(const char *func_name) {
+void *clGetExtensionFunctionAddress(const char *func_name)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clGetExtensionFunctionAddress;
     MS_ASSERT(func != nullptr);
     return func(func_name);
 }
 // clCreateProgramWithIL wrapper, use OpenCLWrapper function.
-cl_program clCreateProgramWithIL(cl_context context, const void *il, size_t length, cl_int *ret) {
+cl_program clCreateProgramWithIL(cl_context context, const void *il, size_t length, cl_int *ret)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clCreateProgramWithIL;
     MS_ASSERT(func != nullptr);
@@ -744,7 +805,8 @@ cl_program clCreateProgramWithIL(cl_context context, const void *il, size_t leng
 }
 
 // clSVMAlloc wrapper, use OpenCLWrapper function.
-void *clSVMAlloc(cl_context context, cl_mem_flags flags, size_t size, cl_uint align) {
+void *clSVMAlloc(cl_context context, cl_mem_flags flags, size_t size, cl_uint align)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clSVMAlloc;
     MS_ASSERT(func != nullptr);
@@ -752,16 +814,18 @@ void *clSVMAlloc(cl_context context, cl_mem_flags flags, size_t size, cl_uint al
 }
 
 // clSVMFree wrapper, use OpenCLWrapper function.
-void clSVMFree(cl_context context, void *buffer) {
+void clSVMFree(cl_context context, void *buffer)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clSVMFree;
     MS_ASSERT(func != nullptr);
-  func(context, buffer);
+    func(context, buffer);
 }
 
 // clEnqueueSVMMap wrapper, use OpenCLWrapper function.
 cl_int clEnqueueSVMMap(cl_command_queue command_queue, cl_bool blocking, cl_map_flags flags, void *host_ptr,
-                       size_t size, cl_uint num_events_in_wait_list, const cl_event *event_wait_list, cl_event *event) {
+                       size_t size, cl_uint num_events_in_wait_list, const cl_event *event_wait_list, cl_event *event)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clEnqueueSVMMap;
     MS_ASSERT(func != nullptr);
@@ -770,7 +834,8 @@ cl_int clEnqueueSVMMap(cl_command_queue command_queue, cl_bool blocking, cl_map_
 
 // clEnqueueSVMUnmap wrapper, use OpenCLWrapper function.
 cl_int clEnqueueSVMUnmap(cl_command_queue command_queue, void *host_ptr, cl_uint num_events_in_wait_list,
-                         const cl_event *event_wait_list, cl_event *event) {
+                         const cl_event *event_wait_list, cl_event *event)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clEnqueueSVMUnmap;
     MS_ASSERT(func != nullptr);
@@ -778,7 +843,8 @@ cl_int clEnqueueSVMUnmap(cl_command_queue command_queue, void *host_ptr, cl_uint
 }
 
 // clSetKernelArgSVMPointer wrapper, use OpenCLWrapper function.
-cl_int clSetKernelArgSVMPointer(cl_kernel kernel, cl_uint index, const void *host_ptr) {
+cl_int clSetKernelArgSVMPointer(cl_kernel kernel, cl_uint index, const void *host_ptr)
+{
     OHOS::InitOpenCL();
     auto func = OHOS::clSetKernelArgSVMPointer;
     MS_ASSERT(func != nullptr);
