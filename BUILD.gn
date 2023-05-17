@@ -35,6 +35,7 @@ ohos_shared_library("libcl") {
   public_configs = [ ":cl_public_config" ]
   output_name = "OpenCL"
   output_extension = "so"
+  innerapi_tags = [ "platformsdk_indirect" ]
   part_name = "opencl-headers"
   subsystem_name = "thirdparty"
 }
