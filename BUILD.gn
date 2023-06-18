@@ -36,7 +36,7 @@ ohos_shared_library("libcl") {
   output_name = "OpenCL"
   output_extension = "so"
   part_name = "opencl-headers"
-  subsystem_name = "thirdparty"
+  subsystem_name = "resourceschedule"
 }
 
 group("cl_tests") {
