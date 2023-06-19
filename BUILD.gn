@@ -37,7 +37,7 @@ ohos_shared_library("libcl") {
   output_extension = "so"
   innerapi_tags = [ "platformsdk_indirect" ]
   part_name = "opencl-headers"
-  subsystem_name = "resourceschedule"
+  subsystem_name = "thirdparty"
 }
 
 group("cl_tests") {
