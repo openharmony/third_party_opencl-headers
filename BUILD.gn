@@ -33,7 +33,7 @@ ohos_shared_library("libcl") {
   sources = [ "src/opencl_wrapper.cpp" ]
   configs = [ ":cl_config" ]
   public_configs = [ ":cl_public_config" ]
-  output_name = "OpenCL"
+  output_name = "opencl_wrapper"
   output_extension = "so"
   innerapi_tags = [ "platformsdk_indirect" ]
   part_name = "opencl-headers"
