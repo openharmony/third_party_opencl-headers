@@ -33,6 +33,8 @@ static const std::vector<std::string> g_opencl_library_paths = {
     "/vendor/lib64/chipsetsdk/libGLES_mali.so",
     "/system/lib64/libGLES_mali.so",
     "libGLES_mali.so",
+    "/vendor/lib64/chipsetsdk/libhvgr_v200.so",
+    "/vendor/lib64/chipsetsdk/libEGL_impl.so",
 #endif
 };
 
@@ -108,6 +110,7 @@ static bool LoadLibraryFromPath(const std::string &library_path, void **handle_p
     LOAD_OPENCL_FUNCTION_PTR(clRetainProgram);
     LOAD_OPENCL_FUNCTION_PTR(clGetProgramBuildInfo);
     LOAD_OPENCL_FUNCTION_PTR(clEnqueueReadBuffer);
+    LOAD_OPENCL_FUNCTION_PTR(clEnqueueReadBufferRect);
     LOAD_OPENCL_FUNCTION_PTR(clEnqueueWriteBuffer);
     LOAD_OPENCL_FUNCTION_PTR(clEnqueueReadImage);
     LOAD_OPENCL_FUNCTION_PTR(clEnqueueWriteImage);
@@ -194,6 +197,7 @@ CL_DEFINE_FUNC_PTR(clEnqueueCopyImage);
 CL_DEFINE_FUNC_PTR(clRetainProgram);
 CL_DEFINE_FUNC_PTR(clGetProgramBuildInfo);
 CL_DEFINE_FUNC_PTR(clEnqueueReadBuffer);
+CL_DEFINE_FUNC_PTR(clEnqueueReadBufferRect);
 CL_DEFINE_FUNC_PTR(clEnqueueWriteBuffer);
 CL_DEFINE_FUNC_PTR(clEnqueueWriteImage);
 CL_DEFINE_FUNC_PTR(clEnqueueReadImage);
@@ -493,6 +497,21 @@ cl_int clEnqueueReadBuffer(cl_command_queue command_queue, cl_mem buffer, cl_boo
     auto func = OHOS::clEnqueueReadBuffer;
     MS_ASSERT(func != nullptr);
     return func(command_queue, buffer, blocking_read, offset, size, ptr, num_events_in_wait_list,
+                event_wait_list, event);
+}
+
+// clEnqueueReadBufferRect wrapper, use OpenCLWrapper function.
+cl_int clEnqueueReadBufferRect(cl_command_queue command_queue, cl_mem buffer, cl_bool blocking_read,
+                               const size_t *buffer_origin, const size_t *host_origin, const size_t *region,
+                               size_t buffer_row_pitch, size_t buffer_slice_pitch, size_t host_row_pitch,
+                               size_t host_slice_pitch, void *ptr, cl_uint num_events_in_wait_list,
+                               const cl_event *event_wait_list, cl_event *event)
+{
+    OHOS::InitOpenCL();
+    auto func = OHOS::clEnqueueReadBufferRect;
+    MS_ASSERT(func != nullptr);
+    return func(command_queue, buffer, blocking_read, buffer_origin, host_origin, region, buffer_row_pitch,
+                buffer_slice_pitch, host_row_pitch, host_slice_pitch, ptr, num_events_in_wait_list,
                 event_wait_list, event);
 }
 
