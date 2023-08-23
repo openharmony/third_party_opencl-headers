@@ -69,6 +69,9 @@ using clEnqueueReadImageFunc = cl_int (*)(cl_command_queue, cl_mem, cl_bool, con
                                           size_t, void *, cl_uint, const cl_event *, cl_event *);
 using clEnqueueReadBufferFunc = cl_int (*)(cl_command_queue, cl_mem, cl_bool, size_t, size_t, void *, cl_uint,
                                            const cl_event *, cl_event *);
+using clEnqueueReadBufferRectFunc = cl_int (*)(cl_command_queue, cl_mem, cl_bool, const size_t *, const size_t *, 
+                                               const size_t *, size_t, size_t, size_t, size_t, void *, cl_uint,
+                                               const cl_event *, cl_event *);
 using clGetProgramBuildInfoFunc = cl_int (*)(cl_program, cl_device_id, cl_program_build_info, size_t, void *, size_t *);
 using clRetainProgramFunc = cl_int (*)(cl_program program);
 using clEnqueueMapBufferFunc = void *(*)(cl_command_queue, cl_mem, cl_bool, cl_map_flags, size_t, size_t, cl_uint,
@@ -165,6 +168,7 @@ CL_DECLARE_FUNC_PTR(clEnqueueCopyImage);
 CL_DECLARE_FUNC_PTR(clRetainProgram);
 CL_DECLARE_FUNC_PTR(clGetProgramBuildInfo);
 CL_DECLARE_FUNC_PTR(clEnqueueReadBuffer);
+CL_DECLARE_FUNC_PTR(clEnqueueReadBufferRect);
 CL_DECLARE_FUNC_PTR(clEnqueueWriteBuffer);
 CL_DECLARE_FUNC_PTR(clEnqueueWriteImage);
 CL_DECLARE_FUNC_PTR(clEnqueueReadImage);
