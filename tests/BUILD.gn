@@ -143,6 +143,10 @@ ohos_executable("test_cl_layer") {
 group("tests") {
   deps = [
     ":test_cl",
+    ":test_cl_d3d10",
+    ":test_cl_d3d11",
+    ":test_cl_dx9_media_sharing",
+    ":test_cl_dx9_media_sharing_intel",
     ":test_cl_egl",
     ":test_cl_ext",
     ":test_cl_ext_intel",
@@ -150,14 +154,10 @@ group("tests") {
     ":test_cl_gl_ext",
     ":test_cl_half",
     ":test_cl_icd",
+    ":test_cl_layer",
     ":test_cl_platform",
     ":test_cl_version",
     ":test_headers",
     ":test_opencl",
-    ":test_cl_d3d10",
-    ":test_cl_d3d11",
-    ":test_cl_dx9_media_sharing",
-    ":test_cl_dx9_media_sharing_intel",
-    ":test_cl_layer"
   ]
 }
