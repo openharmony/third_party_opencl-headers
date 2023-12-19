@@ -41,11 +41,11 @@ ohos_shared_library("libcl") {
 }
 
 config("opencl_headers_public_config") {
-  include_dirs = ["./"]
+  include_dirs = [ "./" ]
 }
 
 source_set("opencl_headers") {
-  public_configs = [ ":opencl_headers_public_config"]
+  public_configs = [ ":opencl_headers_public_config" ]
 }
 
 group("cl_tests") {
