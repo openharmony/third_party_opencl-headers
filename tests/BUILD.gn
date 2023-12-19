@@ -105,6 +105,41 @@ ohos_executable("test_opencl") {
   subsystem_name = "thirdparty"
 }
 
+ohos_executable("test_cl_d3d10") {
+  sources = [ "test_cl_d3d10.h.c" ]
+  configs = [ ":cl_test_config" ]
+  part_name = "opencl-headers"
+  subsystem_name = "thirdparty"
+}
+
+ohos_executable("test_cl_d3d11") {
+  sources = [ "test_cl_d3d11.h.c" ]
+  configs = [ ":cl_test_config" ]
+  part_name = "opencl-headers"
+  subsystem_name = "thirdparty"
+}
+
+ohos_executable("test_cl_dx9_media_sharing") {
+  sources = [ "test_cl_dx9_media_sharing.h.c" ]
+  configs = [ ":cl_test_config" ]
+  part_name = "opencl-headers"
+  subsystem_name = "thirdparty"
+}
+
+ohos_executable("test_cl_dx9_media_sharing_intel") {
+  sources = [ "test_cl_dx9_media_sharing_intel.h.c" ]
+  configs = [ ":cl_test_config" ]
+  part_name = "opencl-headers"
+  subsystem_name = "thirdparty"
+}
+
+ohos_executable("test_cl_layer") {
+  sources = [ "test_cl_layer.h.c" ]
+  configs = [ ":cl_test_config" ]
+  part_name = "opencl-headers"
+  subsystem_name = "thirdparty"
+}
+
 group("tests") {
   deps = [
     ":test_cl",
@@ -119,5 +154,10 @@ group("tests") {
     ":test_cl_version",
     ":test_headers",
     ":test_opencl",
+    ":test_cl_d3d10",
+    ":test_cl_d3d11",
+    ":test_cl_dx9_media_sharing",
+    ":test_cl_dx9_media_sharing_intel",
+    ":test_cl_layer"
   ]
 }
