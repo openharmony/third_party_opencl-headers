@@ -4,7 +4,7 @@
         "License": "Apache-2.0",
         "License File": "LICENSE",
         "Version Number": "v2022.05.18",
-        "Owner": "lengyang3@hisilicon.com",
+        "Owner": "sunsuodong@huawei.com",
         "Upstream URL": "https://github.com/KhronosGroup/OpenCL-Headers/archive/v2022.05.18.tar.gz",
         "Description": "OpenCLTM API Headers"
     }
