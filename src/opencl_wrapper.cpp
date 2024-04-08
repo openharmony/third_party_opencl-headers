@@ -65,6 +65,25 @@ bool UnLoadOpenCLLibrary(void *handle)
     return true;
 }
 
+bool InitOpenCLExtern(void **clSoHandle)
+{
+    if (clSoHandle == nullptr) {
+        return false;
+    }
+    return LoadOpenCLLibrary(clSoHandle);
+}
+
+bool UnLoadCLExtern(void *clSoHandle)
+{
+    if (clSoHandle == nullptr) {
+        return false;
+    }
+    if (dlclose(clSoHandle) != 0) {
+        return false;
+    }
+    return true;
+}
+
 static bool LoadLibraryFromPath(const std::string &library_path, void **handle_ptr)
 {
     if (handle_ptr == nullptr) {
