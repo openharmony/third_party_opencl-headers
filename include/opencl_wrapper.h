@@ -30,6 +30,9 @@ bool LoadOpenCLLibrary(void **handle_ptr);
 bool UnLoadOpenCLLibrary(void *handle);
 bool InitOpenCL();
 
+bool InitOpenCLExtern(void **clSoHandle);
+bool UnLoadCLExtern(void *clSoHandle);
+
 // get platform id
 using clGetPlatformIDsFunc = cl_int (*)(cl_uint, cl_platform_id *, cl_uint *);
 // get platform info
