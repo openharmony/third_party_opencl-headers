@@ -1,6 +1,6 @@
 [
     {
-        "Name": "OpenCL-Headers",
+        "Name": "Khronos Group - OpenCL - Headers",
         "License": "Apache-2.0",
         "License File": "LICENSE",
         "Version Number": "v2022.05.18",
