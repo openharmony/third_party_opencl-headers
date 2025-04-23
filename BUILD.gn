@@ -23,7 +23,7 @@ config("cl_config") {
 
 config("cl_public_config") {
   include_dirs = [
-    "./",
+    "opencl-headers-CL",
     "include",
   ]
 }
@@ -41,7 +41,10 @@ ohos_shared_library("libcl") {
 }
 
 config("opencl_headers_public_config") {
-  include_dirs = [ "./" ]
+  include_dirs = [
+    "opencl-headers-CL",
+    "include",
+  ]
 }
 
 source_set("opencl_headers") {
