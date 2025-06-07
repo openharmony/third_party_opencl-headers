@@ -34,7 +34,11 @@ static const std::vector<std::string> g_opencl_library_paths = {
     "/system/lib64/libGLES_mali.so",
     "libGLES_mali.so",
     "/vendor/lib64/chipsetsdk/libhvgr_v200.so",
+    "/vendor/lib64/passthrough/libhvgr_v200.so",
+    "libhvgr_v200.so",
     "/vendor/lib64/chipsetsdk/libEGL_impl.so",
+    "/vendor/lib64/passthrough/libEGL_impl.so",
+    "libEGL_impl.so",
 #endif
 };
 
