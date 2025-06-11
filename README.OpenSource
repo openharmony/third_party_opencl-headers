@@ -5,7 +5,7 @@
         "License File": "LICENSE",
         "Version Number": "v2024.05.08",
         "Owner": "sunsuodong@huawei.com",
-        "Upstream URL": "https://github.com/KhronosGroup/OpenCL-Headers/archive/v2022.05.18.tar.gz",
+        "Upstream URL": "https://github.com/KhronosGroup/OpenCL-Headers",
         "Description": "OpenCLTM API Headers"
     }
 ]
