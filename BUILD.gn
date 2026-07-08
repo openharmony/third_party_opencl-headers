@@ -18,6 +18,7 @@ config("cl_config") {
     "-std=c++17",
     "-Wno-error=implicit-fallthrough",
     "-Wno-deprecated-declarations",
+    "-fstack-protector-strong",
   ]
 }
 
