@@ -30,6 +30,7 @@ config("cl_public_config") {
 }
 
 ohos_shared_library("libcl") {
+  branch_protector_ret = "pac_ret"
   visibility = [ "*" ]
   sources = [ "src/opencl_wrapper.cpp" ]
   configs = [ ":cl_config" ]
